@@ -3,6 +3,7 @@ import os
 import random
 import sys
 
+from datetime import time
 from telegram.ext import Updater, CommandHandler, CallbackContext
 
 # Enabling logging
@@ -54,7 +55,7 @@ if __name__ == '__main__':
     updater = Updater(TOKEN, request_kwargs=REQUEST_KWARGS, use_context=True)
     j = updater.job_queue
 
-    job_minute = j.run_daily(send_notification)
+    job_minute = j.run_daily(send_notification, time(20, 0))
 
     # updater.dispatcher.add_handler(CommandHandler("start", start_handler))
     # updater.dispatcher.add_handler(CommandHandler("random", random_handler))
