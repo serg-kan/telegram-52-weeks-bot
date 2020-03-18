@@ -2,6 +2,7 @@ import logging
 import os
 import random
 import sys
+import pytz
 
 from datetime import time
 from telegram.ext import Updater, CommandHandler, CallbackContext
@@ -35,7 +36,6 @@ elif mode == "prod":
     def run(updater):
         PORT = int(os.environ.get("PORT", "8443"))
         HEROKU_APP_NAME = os.environ.get("HEROKU_APP_NAME")
-        # Code from https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks#heroku
         updater.start_webhook(listen="0.0.0.0",
                               port=PORT,
                               url_path=TOKEN)
@@ -45,19 +45,16 @@ else:
     logger.error("No MODE specified!")
     sys.exit(1)
 
-
 def send_notification(context: CallbackContext):
-    context.bot.send_message(chat_id=chat_id,
-                             text='One message every minute')
+    text = 'Очередная неделя. Не забудьте положить деньги на счет!'
+    context.bot.send_message(chat_id=chat_id, text=text)
 
 if __name__ == '__main__':
     logger.info("Starting bot")
     updater = Updater(TOKEN, request_kwargs=REQUEST_KWARGS, use_context=True)
     j = updater.job_queue
 
-    job_minute = j.run_daily(send_notification, time(20, 0))
-
-    # updater.dispatcher.add_handler(CommandHandler("start", start_handler))
-    # updater.dispatcher.add_handler(CommandHandler("random", random_handler))
+    day = (0,)
+    job_daily = j.run_daily(send_notification, days=day, time=time(13, 0))
 
     run(updater)
